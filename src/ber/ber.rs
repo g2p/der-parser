@@ -10,6 +10,7 @@ use core::convert::From;
 use core::convert::TryFrom;
 use core::fmt;
 use core::ops::Index;
+#[cfg(feature="bitslice")]
 use nom::bitvec::{order::Msb0, slice::BitSlice};
 use rusticata_macros::newtype_enum;
 
@@ -513,6 +514,7 @@ impl<'a> BerObject<'a> {
     }
 
     /// Constructs a shared `&BitSlice` reference over the object data, if available as slice.
+    #[cfg(feature="bitslice")]
     pub fn as_bitslice(&self) -> Result<&BitSlice<Msb0, u8>, BerError> {
         self.content.as_bitslice()
     }
@@ -785,6 +787,7 @@ impl<'a> BerObjectContent<'a> {
     }
 
     /// Constructs a shared `&BitSlice` reference over the object data, if available as slice.
+    #[cfg(feature="bitslice")]
     pub fn as_bitslice(&self) -> Result<&BitSlice<Msb0, u8>, BerError> {
         self.as_slice()
             .and_then(|s| BitSlice::<Msb0, _>::from_slice(s).ok_or(BerError::BerValueError))
@@ -1050,6 +1053,7 @@ impl<'a> BitStringObject<'a> {
     }
 
     /// Constructs a shared `&BitSlice` reference over the object data.
+    #[cfg(feature="bitslice")]
     pub fn as_bitslice(&self) -> Option<&BitSlice<Msb0, u8>> {
         BitSlice::<Msb0, _>::from_slice(self.data)
     }
@@ -1065,7 +1069,6 @@ impl<'a> AsRef<[u8]> for BitStringObject<'a> {
 mod tests {
     use crate::ber::*;
     use crate::oid::*;
-    use std::string::String;
 
     #[test]
     fn test_der_as_u64() {
@@ -1123,7 +1126,9 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature="bitslice")]
     fn test_der_bitslice() {
+        use std::string::String;
         let obj = BitStringObject {
             data: &[0x0f, 0x00, 0x40],
         };
