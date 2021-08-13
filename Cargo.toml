@@ -31,6 +31,10 @@ include = [
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[patch.crates-io]
+nom.path = "../../Geal/nom"
+rusticata-macros.path = "../rusticata-macros"
+
 [dependencies]
 cookie-factory = { version="0.3.0", optional=true }
 nom = { version = "6.0", default-features = false, features = ["alloc"] }
